@@ -1,0 +1,69 @@
+{
+  "books": [
+    { "id": "bukhari", "title": { "ru": "Сахих аль-Бухари", "en": "Sahih al-Bukhari", "ar": "صحيح البخاري" }, "count": 7275, "icon": "ب" },
+    { "id": "muslim", "title": { "ru": "Сахих Муслим", "en": "Sahih Muslim", "ar": "صحيح مسلم" }, "count": 7563, "icon": "م" }
+  ],
+  "chapters": [
+    { "id": "iman", "title": { "ru": "Вера", "en": "Faith", "ar": "الإيمان" } },
+    { "id": "salah", "title": { "ru": "Намаз", "en": "Prayer", "ar": "الصلاة" } },
+    { "id": "zakat", "title": { "ru": "Закят", "en": "Zakat", "ar": "الزكاة" } },
+    { "id": "sawm", "title": { "ru": "Пост", "en": "Fasting", "ar": "الصوم" } },
+    { "id": "hajj", "title": { "ru": "Хадж", "en": "Hajj", "ar": "الحج" } },
+    { "id": "buyu", "title": { "ru": "Торговля", "en": "Trade", "ar": "البيوع" } },
+    { "id": "adab", "title": { "ru": "Адаб", "en": "Manners", "ar": "الأدب" } }
+  ],
+  "hadiths": [
+    {
+      "id": "bukhari-1",
+      "bookId": "bukhari",
+      "number": 1,
+      "chapterId": "iman",
+      "bookTitle": { "ru": "Начало Откровения", "en": "Beginning of Revelation", "ar": "بدء الوحي" },
+      "title": { "ru": "Дела оцениваются по намерениям", "en": "Actions are judged by intentions", "ar": "إنما الأعمال بالنيات" },
+      "arabic": "إِنَّمَا الأَعْمَالُ بِالنِّيَّاتِ، وَإِنَّمَا لِكُلِّ امْرِئٍ مَا نَوَى",
+      "translations": {
+        "ru": "Поистине, дела оцениваются только по намерениям, и каждому человеку достанется только то, что он намеревался получить.",
+        "en": "Actions are judged by intentions, and every person will receive according to what he intended."
+      }
+    },
+    {
+      "id": "bukhari-2",
+      "bookId": "bukhari",
+      "number": 2,
+      "chapterId": "iman",
+      "bookTitle": { "ru": "Вера", "en": "Faith", "ar": "الإيمان" },
+      "title": { "ru": "Ислам построен на пяти основах", "en": "Islam is built upon five", "ar": "بني الإسلام على خمس" },
+      "arabic": "بُنِيَ الإِسْلَامُ عَلَى خَمْسٍ",
+      "translations": {
+        "ru": "Ислам построен на пяти основах: свидетельстве, молитве, закяте, посте и хадже.",
+        "en": "Islam is built upon five pillars."
+      }
+    },
+    {
+      "id": "muslim-1",
+      "bookId": "muslim",
+      "number": 1,
+      "chapterId": "iman",
+      "bookTitle": { "ru": "Вера", "en": "Faith", "ar": "الإيمان" },
+      "title": { "ru": "Вера, ислам и ихсан", "en": "Faith, Islam and Ihsan", "ar": "الإيمان والإسلام والإحسان" },
+      "arabic": "هَذَا جِبْرِيلُ أَتَاكُمْ يُعَلِّمُكُمْ دِينَكُمْ",
+      "translations": {
+        "ru": "Это был Джибриль, который пришёл к вам, чтобы научить вас вашей религии.",
+        "en": "That was Jibril who came to teach you your religion."
+      }
+    },
+    {
+      "id": "muslim-2",
+      "bookId": "muslim",
+      "number": 2,
+      "chapterId": "salah",
+      "bookTitle": { "ru": "Намаз", "en": "Prayer", "ar": "الصلاة" },
+      "title": { "ru": "Значение молитвы", "en": "The meaning of prayer", "ar": "الصلاة نور" },
+      "arabic": "الصَّلَاةُ نُورٌ",
+      "translations": {
+        "ru": "Молитва — свет.",
+        "en": "Prayer is light."
+      }
+    }
+  ]
+}
