@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="theme-color" content="#0b0b0b" />
+  <title>Sahihayn — Сахих аль-Бухари и Сахих Муслим</title>
+  <link rel="manifest" href="manifest.webmanifest" />
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+  <main class="app-shell">
+    <section class="hero">
+      <div class="ornament">۞</div>
+      <p class="eyebrow">Sahihayn Collection</p>
+      <h1>Сахих аль-Бухари<br />и Сахих Муслим</h1>
+      <p class="subtitle">Два великих сборника достоверных хадисов в одном красивом приложении.</p>
+      <div class="search-box">
+        <input id="searchInput" type="search" placeholder="Поиск по сборникам…" />
+      </div>
+    </section>
+
+    <section class="cards" id="collectionCards" aria-label="Сборники хадисов">
+      <article class="book-card" data-title="Сахих аль-Бухари">
+        <div class="book-icon">ب</div>
+        <div>
+          <p class="book-label">Сборник хадисов</p>
+          <h2>Сахих аль-Бухари</h2>
+          <p>Один из самых известных и авторитетных сборников хадисов.</p>
+        </div>
+        <button class="gold-button" type="button">Открыть</button>
+      </article>
+
+      <article class="book-card" data-title="Сахих Муслим">
+        <div class="book-icon">م</div>
+        <div>
+          <p class="book-label">Сборник хадисов</p>
+          <h2>Сахих Муслим</h2>
+          <p>Классический сборник достоверных хадисов имама Муслима.</p>
+        </div>
+        <button class="gold-button" type="button">Открыть</button>
+      </article>
+    </section>
+
+    <section class="preview-panel" id="previewPanel">
+      <h3>Добро пожаловать</h3>
+      <p>Выберите сборник, чтобы позже открыть главы и хадисы. Это первая версия интерфейса.</p>
+    </section>
+  </main>
+
+  <script src="script.js"></script>
+</body>
+</html>
