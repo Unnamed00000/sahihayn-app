@@ -15,6 +15,7 @@ const books = [
 const chapters = ['Вера','Намаз','Закят','Пост','Хадж','Брак','Торговля','Адаб'];
 let state = { page:'home', query:'', currentBook:null };
 let audioCtx;
+let lastFeedbackAt = 0;
 
 function pref(key, fallback='on'){ return localStorage.getItem('sahihayn:'+key) || fallback; }
 function setPref(key, value){ localStorage.setItem('sahihayn:'+key, value); }
@@ -30,26 +31,27 @@ function tapSound(kind='tap'){
     const gain = audioCtx.createGain();
     const now = audioCtx.currentTime;
     osc.type = 'sine';
-    osc.frequency.value = kind === 'nav' ? 760 : kind === 'ok' ? 980 : 560;
+    osc.frequency.value = kind === 'ok' ? 920 : 620;
     gain.gain.setValueAtTime(0.001, now);
-    gain.gain.exponentialRampToValueAtTime(0.06, now + 0.01);
-    gain.gain.exponentialRampToValueAtTime(0.001, now + 0.075);
+    gain.gain.exponentialRampToValueAtTime(0.055, now + 0.01);
+    gain.gain.exponentialRampToValueAtTime(0.001, now + 0.07);
     osc.connect(gain); gain.connect(audioCtx.destination);
-    osc.start(now); osc.stop(now + 0.08);
+    osc.start(now); osc.stop(now + 0.075);
   }catch(e){}
 }
 function tapFeel(kind='tap'){
-  if(pref('haptic') !== 'off' && navigator.vibrate) navigator.vibrate(kind === 'nav' ? [10,15,10] : [18]);
+  const now = Date.now();
+  if(now - lastFeedbackAt < 140) return;
+  lastFeedbackAt = now;
+  if(pref('haptic') !== 'off' && navigator.vibrate) navigator.vibrate(28);
   tapSound(kind);
 }
 function toggleFav(id){
-  tapFeel('ok');
   const favs = getFavorites();
   setFavorites(favs.includes(id) ? favs.filter(x => x !== id) : [...favs, id]);
   renderHadith(id);
 }
 function setPage(page){
-  tapFeel('nav');
   state.page = page;
   navButtons.forEach(b => b.classList.toggle('active', b.dataset.page === page));
   render();
@@ -63,26 +65,23 @@ function render(){
 function renderHome(){
   const lastId = localStorage.getItem('sahihayn:last');
   const last = hadiths.find(h => h.id === lastId);
-  app.innerHTML = `<section class="screen"><div class="hero-card"><div class="calligraphy">صحيح</div><h2>Сахихайн</h2><p>Сахих аль-Бухари и Сахих Муслим в одном приложении</p></div><div class="books">${books.map(book => `<article class="book-card" onclick="openBook('${book.id}')"><div class="book-icon">${book.icon}</div><div><h3>${book.title}</h3><p class="muted">${book.count} хадисов</p></div><button class="gold-btn">Открыть разделы</button></article>`).join('')}</div>${last ? `<h3>Последний прочитанный</h3><article class="hadith-card" onclick="renderHadith('${last.id}')"><b>${last.source} ${last.number}</b><p>${last.title}</p><p class="muted">${last.ru.slice(0,80)}...</p></article>` : ''}<div class="features"><div class="feature">🔍 Умный поиск</div><div class="feature">⭐ Избранное</div><div class="feature">🔖 Последний хадис</div><div class="feature">🌙 Темы</div></div></section>`;
+  app.innerHTML = `<section class="screen"><div class="hero-card"><div class="calligraphy">صحيح</div><h2>Сахихайн</h2><p>Сахих аль-Бухари и Сахих Муслим в одном приложении</p></div><div class="books">${books.map(book => `<article class="book-card" onclick="tapFeel();openBook('${book.id}')"><div class="book-icon">${book.icon}</div><div><h3>${book.title}</h3><p class="muted">${book.count} хадисов</p></div><button class="gold-btn">Открыть разделы</button></article>`).join('')}</div>${last ? `<h3>Последний прочитанный</h3><article class="hadith-card" onclick="tapFeel();renderHadith('${last.id}')"><b>${last.source} ${last.number}</b><p>${last.title}</p><p class="muted">${last.ru.slice(0,80)}...</p></article>` : ''}<div class="features"><div class="feature">🔍 Умный поиск</div><div class="feature">⭐ Избранное</div><div class="feature">🔖 Последний хадис</div><div class="feature">🌙 Темы</div></div></section>`;
 }
 function openBook(bookId){
-  tapFeel('nav');
   state.currentBook = bookId;
   const book = books.find(b => b.id === bookId);
-  app.innerHTML = `<section class="screen"><button class="small-btn" onclick="tapFeel();renderHome()">← Назад</button><h2>${book.title}</h2><p class="muted">Разделы по книгам</p><div class="chapter-list">${chapters.map(ch => `<article class="chapter-card" onclick="openChapter('${bookId}','${ch}')"><span>${ch}</span><span>›</span></article>`).join('')}</div></section>`;
+  app.innerHTML = `<section class="screen"><button class="small-btn" onclick="renderHome()">← Назад</button><h2>${book.title}</h2><p class="muted">Разделы по книгам</p><div class="chapter-list">${chapters.map(ch => `<article class="chapter-card" onclick="tapFeel();openChapter('${bookId}','${ch}')"><span>${ch}</span><span>›</span></article>`).join('')}</div></section>`;
 }
 function openChapter(bookId, chapter){
-  tapFeel('nav');
   const source = bookId === 'bukhari' ? 'Сахих аль-Бухари' : 'Сахих Муслим';
   const list = hadiths.filter(h => h.source === source && (h.chapter === chapter || h.book === chapter));
-  app.innerHTML = `<section class="screen"><button class="small-btn" onclick="tapFeel();openBook('${bookId}')">← Назад</button><h2>${chapter}</h2><p class="muted">${source}</p><div class="chapter-list">${(list.length ? list : hadiths.filter(h => h.source === source)).map(h => hadithItem(h)).join('')}</div></section>`;
+  app.innerHTML = `<section class="screen"><button class="small-btn" onclick="openBook('${bookId}')">← Назад</button><h2>${chapter}</h2><p class="muted">${source}</p><div class="chapter-list">${(list.length ? list : hadiths.filter(h => h.source === source)).map(h => hadithItem(h)).join('')}</div></section>`;
 }
-function hadithItem(h){ return `<article class="hadith-card" onclick="renderHadith('${h.id}')"><b>${h.source} ${h.number}</b><p>${h.title}</p><p class="muted">${h.ru.slice(0,90)}...</p></article>`; }
+function hadithItem(h){ return `<article class="hadith-card" onclick="tapFeel();renderHadith('${h.id}')"><b>${h.source} ${h.number}</b><p>${h.title}</p><p class="muted">${h.ru.slice(0,90)}...</p></article>`; }
 function renderHadith(id){
-  tapFeel('nav');
   const h = hadiths.find(x => x.id === id);
   saveLast(id);
-  app.innerHTML = `<section class="screen"><button class="small-btn" onclick="tapFeel();render()">← Назад</button><h2>${h.source} ${h.number}</h2><p class="muted">${h.book}</p><article class="hadith-card"><h3>${h.title}</h3><div class="arabic">${h.arabic}</div><hr><p><b>Перевод русский</b></p><p class="translation">${h.ru}</p><p><b>English</b></p><p class="translation muted">${h.en}</p><div class="actions"><button class="small-btn" onclick="toggleFav('${h.id}')">${isFav(h.id) ? '★ В избранном' : '☆ В избранное'}</button><button class="small-btn" onclick="tapFeel('ok');shareHadith('${h.id}')">📤 Поделиться</button><button class="small-btn" onclick="tapFeel('ok');speakHadith('${h.id}')">🎧 Слушать</button></div></article></section>`;
+  app.innerHTML = `<section class="screen"><button class="small-btn" onclick="render()">← Назад</button><h2>${h.source} ${h.number}</h2><p class="muted">${h.book}</p><article class="hadith-card"><h3>${h.title}</h3><div class="arabic">${h.arabic}</div><hr><p><b>Перевод русский</b></p><p class="translation">${h.ru}</p><p><b>English</b></p><p class="translation muted">${h.en}</p><div class="actions"><button class="small-btn" onclick="toggleFav('${h.id}')">${isFav(h.id) ? '★ В избранном' : '☆ В избранное'}</button><button class="small-btn" onclick="shareHadith('${h.id}')">📤 Поделиться</button><button class="small-btn" onclick="speakHadith('${h.id}')">🎧 Слушать</button></div></article></section>`;
 }
 function renderSearch(){
   const results = hadiths.filter(h => `${h.source} ${h.title} ${h.ru} ${h.book}`.toLowerCase().includes(state.query.toLowerCase()));
@@ -93,11 +92,11 @@ function renderFavorites(){
   app.innerHTML = `<section class="screen"><h2>Избранные хадисы</h2><div class="chapter-list">${list.map(hadithItem).join('') || '<p class="empty">Пока нет избранных хадисов</p>'}</div></section>`;
 }
 function renderSettings(){
-  app.innerHTML = `<section class="screen"><h2>Настройки</h2><article class="setting-card"><h3>Тема</h3><p class="muted">Тёмная и светлая тема</p><button class="gold-btn" onclick="tapFeel('ok');toggleTheme()">🌙 / ☀️ Переключить тему</button></article><article class="setting-card"><h3>Звуки и отклик</h3><p class="muted">Короткий звук и лёгкий отклик при касании.</p><button class="gold-btn" onclick="toggleSounds()">${pref('sounds') === 'off' ? '🔇 Включить звуки' : '🔊 Выключить звуки'}</button><br><br><button class="gold-btn" onclick="toggleHaptic()">${pref('haptic') === 'off' ? '📳 Включить отклик' : '📴 Выключить отклик'}</button><br><br><button class="small-btn" onclick="tapFeel('ok')">Проверить</button></article><article class="setting-card"><h3>Офлайн</h3><p class="muted">База хадисов готовится к офлайн-работе.</p></article></section>`;
+  app.innerHTML = `<section class="screen"><h2>Настройки</h2><article class="setting-card"><h3>Тема</h3><p class="muted">Тёмная и светлая тема</p><button class="gold-btn" onclick="toggleTheme()">🌙 / ☀️ Переключить тему</button></article><article class="setting-card"><h3>Звуки и отклик</h3><p class="muted">Один короткий звук и один отклик на одно касание.</p><button class="gold-btn" onclick="toggleSounds()">${pref('sounds') === 'off' ? '🔇 Включить звуки' : '🔊 Выключить звуки'}</button><br><br><button class="gold-btn" onclick="toggleHaptic()">${pref('haptic') === 'off' ? '📳 Включить отклик' : '📴 Выключить отклик'}</button><br><br><button class="small-btn" onclick="tapFeel('ok')">Проверить</button></article><article class="setting-card"><h3>Офлайн</h3><p class="muted">База хадисов готовится к офлайн-работе.</p></article></section>`;
 }
 function toggleTheme(){ document.body.classList.toggle('light'); setPref('theme', document.body.classList.contains('light') ? 'light' : 'dark'); }
-function toggleSounds(){ setPref('sounds', pref('sounds') === 'off' ? 'on' : 'off'); tapFeel('ok'); renderSettings(); }
-function toggleHaptic(){ setPref('haptic', pref('haptic') === 'off' ? 'on' : 'off'); tapFeel('ok'); renderSettings(); }
+function toggleSounds(){ setPref('sounds', pref('sounds') === 'off' ? 'on' : 'off'); renderSettings(); }
+function toggleHaptic(){ setPref('haptic', pref('haptic') === 'off' ? 'on' : 'off'); renderSettings(); }
 function shareHadith(id){ const h = hadiths.find(x => x.id === id); const text = `${h.source} ${h.number}\n${h.title}\n\n${h.ru}`; if(navigator.share) navigator.share({title:h.title,text}); else navigator.clipboard.writeText(text).then(() => alert('Хадис скопирован')); }
 function speakHadith(id){ const h = hadiths.find(x => x.id === id); speechSynthesis.cancel(); speechSynthesis.speak(new SpeechSynthesisUtterance(h.ru)); }
 
