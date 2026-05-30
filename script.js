@@ -1,108 +1,40 @@
-const app = document.getElementById('app');
-const navButtons = document.querySelectorAll('.bottom-nav button');
+const app=document.getElementById('app');
+const navButtons=document.querySelectorAll('.bottom-nav button');
+let audioCtx,lastFeedbackAt=0;
 
-const hadiths = [
-  { id:'bukhari-1', source:'Сахих аль-Бухари', number:1, book:'Начало Откровения', chapter:'Вера', title:'Дела оцениваются по намерениям', arabic:'إِنَّمَا الأَعْمَالُ بِالنِّيَّاتِ، وَإِنَّمَا لِكُلِّ امْرِئٍ مَا نَوَى', ru:'Поистине, дела оцениваются только по намерениям, и каждому человеку достанется только то, что он намеревался получить.', en:'Actions are judged by intentions, and every person will receive according to what he intended.' },
-  { id:'bukhari-2', source:'Сахих аль-Бухари', number:2, book:'Вера', chapter:'Иман', title:'Ислам построен на пяти основах', arabic:'بُنِيَ الإِسْلَامُ عَلَى خَمْسٍ', ru:'Ислам построен на пяти основах: свидетельстве, молитве, закяте, посте и хадже.', en:'Islam is built upon five pillars.' },
-  { id:'muslim-1', source:'Сахих Муслим', number:1, book:'Вера', chapter:'Иман', title:'Вера, ислам и ихсан', arabic:'هَذَا جِبْرِيلُ أَتَاكُمْ يُعَلِّمُكُمْ دِينَكُمْ', ru:'Это был Джибриль, который пришёл к вам, чтобы научить вас вашей религии.', en:'That was Jibril who came to teach you your religion.' },
-  { id:'muslim-2', source:'Сахих Муслим', number:2, book:'Намаз', chapter:'Молитва', title:'Значение молитвы', arabic:'الصَّلَاةُ نُورٌ', ru:'Молитва — свет.', en:'Prayer is light.' }
+const ui={
+ru:{dir:'ltr',brand:'Сахихайн',sub:'Сборники хадисов<br>Сахих аль-Бухари и Сахих Муслим',home:'Главная',search:'Поиск',fav:'Избранное',settings:'Настройки',hero:'Сахих аль-Бухари и Сахих Муслим в одном приложении',open:'Открыть разделы',last:'Последний прочитанный',smart:'Умный поиск',lastH:'Последний хадис',themes:'Темы',chapters:'Разделы по книгам',back:'← Назад',searchTitle:'Поиск хадисов',searchPh:'Например: намерения, вера, намаз',empty:'Ничего не найдено',favTitle:'Избранные хадисы',noFav:'Пока нет избранных хадисов',theme:'Тема',themeText:'Тёмная и светлая тема',themeBtn:'🌙 / ☀️ Переключить тему',language:'Язык приложения',languageText:'Меняет весь интерфейс приложения.',sound:'Звуки и отклик',soundText:'Один короткий звук и один отклик на одно касание.',soundOn:'🔇 Включить звуки',soundOff:'🔊 Выключить звуки',hapticOn:'📳 Включить отклик',hapticOff:'📴 Выключить отклик',test:'Проверить',offline:'Офлайн',offlineText:'База хадисов готовится к офлайн-работе.',addFav:'☆ В избранное',inFav:'★ В избранном',share:'📤 Поделиться',listen:'🎧 Слушать',tr:'Перевод',hadiths:'хадисов'},
+ar:{dir:'rtl',brand:'الصحيحان',sub:'صحيح البخاري<br>وصحيح مسلم',home:'الرئيسية',search:'البحث',fav:'المفضلة',settings:'الإعدادات',hero:'صحيح البخاري وصحيح مسلم في تطبيق واحد',open:'فتح الأقسام',last:'آخر حديث مقروء',smart:'بحث ذكي',lastH:'آخر حديث',themes:'السمات',chapters:'الأقسام',back:'رجوع ←',searchTitle:'البحث في الأحاديث',searchPh:'مثال: النية، الإيمان، الصلاة',empty:'لا توجد نتائج',favTitle:'الأحاديث المفضلة',noFav:'لا توجد أحاديث مفضلة بعد',theme:'السمة',themeText:'الوضع الداكن والفاتح',themeBtn:'🌙 / ☀️ تغيير السمة',language:'لغة التطبيق',languageText:'تغيير واجهة التطبيق بالكامل.',sound:'الصوت والاهتزاز',soundText:'صوت قصير واهتزاز واحد عند كل ضغطة.',soundOn:'🔇 تشغيل الصوت',soundOff:'🔊 إيقاف الصوت',hapticOn:'📳 تشغيل الاهتزاز',hapticOff:'📴 إيقاف الاهتزاز',test:'اختبار',offline:'بدون إنترنت',offlineText:'يتم تجهيز قاعدة الأحاديث للعمل بدون إنترنت.',addFav:'☆ إضافة للمفضلة',inFav:'★ في المفضلة',share:'📤 مشاركة',listen:'🎧 استماع',tr:'الترجمة',hadiths:'حديث'},
+ka:{dir:'ltr',brand:'საჰიჰაინი',sub:'საჰიჰ ალ-ბუხარი<br>და საჰიჰ მუსლიმი',home:'მთავარი',search:'ძებნა',fav:'რჩეულები',settings:'პარამეტრები',hero:'საჰიჰ ალ-ბუხარი და საჰიჰ მუსლიმი ერთ აპლიკაციაში',open:'განყოფილებების გახსნა',last:'ბოლოს წაკითხული',smart:'ჭკვიანი ძებნა',lastH:'ბოლო ჰადისი',themes:'თემები',chapters:'წიგნების განყოფილებები',back:'← უკან',searchTitle:'ჰადისების ძებნა',searchPh:'მაგ: განზრახვა, რწმენა, ლოცვა',empty:'არაფერი მოიძებნა',favTitle:'რჩეული ჰადისები',noFav:'რჩეულებში ჯერ არაფერია',theme:'თემა',themeText:'მუქი და ნათელი თემა',themeBtn:'🌙 / ☀️ თემის შეცვლა',language:'აპლიკაციის ენა',languageText:'ცვლის მთელ ინტერფეისს.',sound:'ხმები და ვიბრაცია',soundText:'ერთი მოკლე ხმა და ერთი ვიბრაცია თითო შეხებაზე.',soundOn:'🔇 ხმის ჩართვა',soundOff:'🔊 ხმის გამორთვა',hapticOn:'📳 ვიბრაციის ჩართვა',hapticOff:'📴 ვიბრაციის გამორთვა',test:'შემოწმება',offline:'ოფლაინი',offlineText:'ჰადისების ბაზა მზადდება ოფლაინ მუშაობისთვის.',addFav:'☆ რჩეულებში დამატება',inFav:'★ რჩეულებშია',share:'📤 გაზიარება',listen:'🎧 მოსმენა',tr:'თარგმანი',hadiths:'ჰადისი'}
+};
+const names={ru:'Русский',ar:'العربية',ka:'ქართული'};
+const l=()=>pref('lang','ru');
+const t=k=>ui[l()][k]||ui.ru[k];
+
+const hadiths=[
+{id:'bukhari-1',bookId:'bukhari',number:1,chapterId:'faith',book:{ru:'Начало Откровения',ar:'بدء الوحي',ka:'გამოცხადების დასაწყისი'},title:{ru:'Дела оцениваются по намерениям',ar:'إنما الأعمال بالنيات',ka:'საქმეები განზრახვით ფასდება'},arabic:'إِنَّمَا الأَعْمَالُ بِالنِّيَّاتِ، وَإِنَّمَا لِكُلِّ امْرِئٍ مَا نَوَى',tr:{ru:'Поистине, дела оцениваются только по намерениям, и каждому человеку достанется только то, что он намеревался получить.',ar:'إنما الأعمال بالنيات، وإنما لكل امرئ ما نوى.',ka:'საქმეები ფასდება განზრახვით და ადამიანს ექნება ის, რაც განიზრახა.'}},
+{id:'bukhari-2',bookId:'bukhari',number:2,chapterId:'faith',book:{ru:'Вера',ar:'الإيمان',ka:'რწმენა'},title:{ru:'Ислам построен на пяти основах',ar:'بني الإسلام على خمس',ka:'ისლამი ხუთ საფუძველზეა აგებული'},arabic:'بُنِيَ الإِسْلَامُ عَلَى خَمْسٍ',tr:{ru:'Ислам построен на пяти основах: свидетельстве, молитве, закяте, посте и хадже.',ar:'بني الإسلام على خمس.',ka:'ისლამი ხუთ საფუძველზეა აგებული: მოწმობა, ლოცვა, ზაქათი, მარხვა და ჰაჯი.'}},
+{id:'muslim-1',bookId:'muslim',number:1,chapterId:'faith',book:{ru:'Вера',ar:'الإيمان',ka:'რწმენა'},title:{ru:'Вера, ислам и ихсан',ar:'الإيمان والإسلام والإحسان',ka:'რწმენა, ისლამი და იჰსანი'},arabic:'هَذَا جِبْرِيلُ أَتَاكُمْ يُعَلِّمُكُمْ دِينَكُمْ',tr:{ru:'Это был Джибриль, который пришёл к вам, чтобы научить вас вашей религии.',ar:'هذا جبريل أتاكم يعلمكم دينكم.',ka:'ეს იყო ჯიბრილი, რომელიც მოვიდა, რათა თქვენთვის რელიგია ესწავლებინა.'}},
+{id:'muslim-2',bookId:'muslim',number:2,chapterId:'prayer',book:{ru:'Намаз',ar:'الصلاة',ka:'ლოცვა'},title:{ru:'Значение молитвы',ar:'الصلاة نور',ka:'ლოცვის მნიშვნელობა'},arabic:'الصَّلَاةُ نُورٌ',tr:{ru:'Молитва — свет.',ar:'الصلاة نور.',ka:'ლოცვა არის სინათლე.'}}
 ];
-
-const books = [
-  { id:'bukhari', title:'Сахих аль-Бухари', count:7275, icon:'ب' },
-  { id:'muslim', title:'Сахих Муслим', count:7563, icon:'م' }
-];
-const chapters = ['Вера','Намаз','Закят','Пост','Хадж','Брак','Торговля','Адаб'];
-let state = { page:'home', query:'', currentBook:null };
-let audioCtx;
-let lastFeedbackAt = 0;
-
-function pref(key, fallback='on'){ return localStorage.getItem('sahihayn:'+key) || fallback; }
-function setPref(key, value){ localStorage.setItem('sahihayn:'+key, value); }
-function getFavorites(){ return JSON.parse(localStorage.getItem('sahihayn:favorites') || '[]'); }
-function setFavorites(items){ localStorage.setItem('sahihayn:favorites', JSON.stringify(items)); }
-function isFav(id){ return getFavorites().includes(id); }
-function saveLast(id){ localStorage.setItem('sahihayn:last', id); }
-function tapSound(kind='tap'){
-  if(pref('sounds') === 'off') return;
-  try{
-    audioCtx = audioCtx || new (window.AudioContext || window.webkitAudioContext)();
-    const osc = audioCtx.createOscillator();
-    const gain = audioCtx.createGain();
-    const now = audioCtx.currentTime;
-    osc.type = 'sine';
-    osc.frequency.value = kind === 'ok' ? 920 : 620;
-    gain.gain.setValueAtTime(0.001, now);
-    gain.gain.exponentialRampToValueAtTime(0.055, now + 0.01);
-    gain.gain.exponentialRampToValueAtTime(0.001, now + 0.07);
-    osc.connect(gain); gain.connect(audioCtx.destination);
-    osc.start(now); osc.stop(now + 0.075);
-  }catch(e){}
-}
-function tapFeel(kind='tap'){
-  const now = Date.now();
-  if(now - lastFeedbackAt < 140) return;
-  lastFeedbackAt = now;
-  if(pref('haptic') !== 'off' && navigator.vibrate) navigator.vibrate(28);
-  tapSound(kind);
-}
-function toggleFav(id){
-  const favs = getFavorites();
-  setFavorites(favs.includes(id) ? favs.filter(x => x !== id) : [...favs, id]);
-  renderHadith(id);
-}
-function setPage(page){
-  state.page = page;
-  navButtons.forEach(b => b.classList.toggle('active', b.dataset.page === page));
-  render();
-}
-function render(){
-  if(state.page === 'home') renderHome();
-  if(state.page === 'search') renderSearch();
-  if(state.page === 'favorites') renderFavorites();
-  if(state.page === 'settings') renderSettings();
-}
-function renderHome(){
-  const lastId = localStorage.getItem('sahihayn:last');
-  const last = hadiths.find(h => h.id === lastId);
-  app.innerHTML = `<section class="screen"><div class="hero-card"><div class="calligraphy">صحيح</div><h2>Сахихайн</h2><p>Сахих аль-Бухари и Сахих Муслим в одном приложении</p></div><div class="books">${books.map(book => `<article class="book-card" onclick="tapFeel();openBook('${book.id}')"><div class="book-icon">${book.icon}</div><div><h3>${book.title}</h3><p class="muted">${book.count} хадисов</p></div><button class="gold-btn">Открыть разделы</button></article>`).join('')}</div>${last ? `<h3>Последний прочитанный</h3><article class="hadith-card" onclick="tapFeel();renderHadith('${last.id}')"><b>${last.source} ${last.number}</b><p>${last.title}</p><p class="muted">${last.ru.slice(0,80)}...</p></article>` : ''}<div class="features"><div class="feature">🔍 Умный поиск</div><div class="feature">⭐ Избранное</div><div class="feature">🔖 Последний хадис</div><div class="feature">🌙 Темы</div></div></section>`;
-}
-function openBook(bookId){
-  state.currentBook = bookId;
-  const book = books.find(b => b.id === bookId);
-  app.innerHTML = `<section class="screen"><button class="small-btn" onclick="renderHome()">← Назад</button><h2>${book.title}</h2><p class="muted">Разделы по книгам</p><div class="chapter-list">${chapters.map(ch => `<article class="chapter-card" onclick="tapFeel();openChapter('${bookId}','${ch}')"><span>${ch}</span><span>›</span></article>`).join('')}</div></section>`;
-}
-function openChapter(bookId, chapter){
-  const source = bookId === 'bukhari' ? 'Сахих аль-Бухари' : 'Сахих Муслим';
-  const list = hadiths.filter(h => h.source === source && (h.chapter === chapter || h.book === chapter));
-  app.innerHTML = `<section class="screen"><button class="small-btn" onclick="openBook('${bookId}')">← Назад</button><h2>${chapter}</h2><p class="muted">${source}</p><div class="chapter-list">${(list.length ? list : hadiths.filter(h => h.source === source)).map(h => hadithItem(h)).join('')}</div></section>`;
-}
-function hadithItem(h){ return `<article class="hadith-card" onclick="tapFeel();renderHadith('${h.id}')"><b>${h.source} ${h.number}</b><p>${h.title}</p><p class="muted">${h.ru.slice(0,90)}...</p></article>`; }
-function renderHadith(id){
-  const h = hadiths.find(x => x.id === id);
-  saveLast(id);
-  app.innerHTML = `<section class="screen"><button class="small-btn" onclick="render()">← Назад</button><h2>${h.source} ${h.number}</h2><p class="muted">${h.book}</p><article class="hadith-card"><h3>${h.title}</h3><div class="arabic">${h.arabic}</div><hr><p><b>Перевод русский</b></p><p class="translation">${h.ru}</p><p><b>English</b></p><p class="translation muted">${h.en}</p><div class="actions"><button class="small-btn" onclick="toggleFav('${h.id}')">${isFav(h.id) ? '★ В избранном' : '☆ В избранное'}</button><button class="small-btn" onclick="shareHadith('${h.id}')">📤 Поделиться</button><button class="small-btn" onclick="speakHadith('${h.id}')">🎧 Слушать</button></div></article></section>`;
-}
-function renderSearch(){
-  const results = hadiths.filter(h => `${h.source} ${h.title} ${h.ru} ${h.book}`.toLowerCase().includes(state.query.toLowerCase()));
-  app.innerHTML = `<section class="screen"><h2>Поиск хадисов</h2><input class="search-input" placeholder="Например: намерения, вера, намаз" value="${state.query}" oninput="state.query=this.value;renderSearch()"><div class="chapter-list">${results.map(hadithItem).join('') || '<p class="empty">Ничего не найдено</p>'}</div></section>`;
-}
-function renderFavorites(){
-  const list = hadiths.filter(h => getFavorites().includes(h.id));
-  app.innerHTML = `<section class="screen"><h2>Избранные хадисы</h2><div class="chapter-list">${list.map(hadithItem).join('') || '<p class="empty">Пока нет избранных хадисов</p>'}</div></section>`;
-}
-function renderSettings(){
-  app.innerHTML = `<section class="screen"><h2>Настройки</h2><article class="setting-card"><h3>Тема</h3><p class="muted">Тёмная и светлая тема</p><button class="gold-btn" onclick="toggleTheme()">🌙 / ☀️ Переключить тему</button></article><article class="setting-card"><h3>Звуки и отклик</h3><p class="muted">Один короткий звук и один отклик на одно касание.</p><button class="gold-btn" onclick="toggleSounds()">${pref('sounds') === 'off' ? '🔇 Включить звуки' : '🔊 Выключить звуки'}</button><br><br><button class="gold-btn" onclick="toggleHaptic()">${pref('haptic') === 'off' ? '📳 Включить отклик' : '📴 Выключить отклик'}</button><br><br><button class="small-btn" onclick="tapFeel('ok')">Проверить</button></article><article class="setting-card"><h3>Офлайн</h3><p class="muted">База хадисов готовится к офлайн-работе.</p></article></section>`;
-}
-function toggleTheme(){ document.body.classList.toggle('light'); setPref('theme', document.body.classList.contains('light') ? 'light' : 'dark'); }
-function toggleSounds(){ setPref('sounds', pref('sounds') === 'off' ? 'on' : 'off'); renderSettings(); }
-function toggleHaptic(){ setPref('haptic', pref('haptic') === 'off' ? 'on' : 'off'); renderSettings(); }
-function shareHadith(id){ const h = hadiths.find(x => x.id === id); const text = `${h.source} ${h.number}\n${h.title}\n\n${h.ru}`; if(navigator.share) navigator.share({title:h.title,text}); else navigator.clipboard.writeText(text).then(() => alert('Хадис скопирован')); }
-function speakHadith(id){ const h = hadiths.find(x => x.id === id); speechSynthesis.cancel(); speechSynthesis.speak(new SpeechSynthesisUtterance(h.ru)); }
-
-navButtons.forEach(btn => btn.addEventListener('click', () => setPage(btn.dataset.page)));
-document.getElementById('searchBtn').addEventListener('click', () => setPage('search'));
-document.addEventListener('click', e => { if(e.target.closest('button')) tapFeel(); }, { capture:true });
-if(pref('theme','dark') === 'light') document.body.classList.add('light');
-if('serviceWorker' in navigator) navigator.serviceWorker.register('sw.js').catch(() => {});
-renderHome();
+const books=[{id:'bukhari',title:{ru:'Сахих аль-Бухари',ar:'صحيح البخاري',ka:'საჰიჰ ალ-ბუხარი'},count:7275,icon:'ب'},{id:'muslim',title:{ru:'Сахих Муслим',ar:'صحيح مسلم',ka:'საჰიჰ მუსლიმი'},count:7563,icon:'م'}];
+const chapters=[{id:'faith',ru:'Вера',ar:'الإيمان',ka:'რწმენა'},{id:'prayer',ru:'Намаз',ar:'الصلاة',ka:'ლოცვა'},{id:'zakat',ru:'Закят',ar:'الزكاة',ka:'ზაქათი'},{id:'fasting',ru:'Пост',ar:'الصوم',ka:'მარხვა'},{id:'hajj',ru:'Хадж',ar:'الحج',ka:'ჰაჯი'},{id:'trade',ru:'Торговля',ar:'البيوع',ka:'ვაჭრობა'},{id:'adab',ru:'Адаб',ar:'الأدب',ka:'ადაბი'}];
+let state={page:'home',query:'',currentBook:null};
+function pref(k,f='on'){return localStorage.getItem('sahihayn:'+k)||f}function setPref(k,v){localStorage.setItem('sahihayn:'+k,v)}function txt(o){return o[l()]||o.ru}
+function getFavorites(){return JSON.parse(localStorage.getItem('sahihayn:favorites')||'[]')}function setFavorites(x){localStorage.setItem('sahihayn:favorites',JSON.stringify(x))}function isFav(id){return getFavorites().includes(id)}function saveLast(id){localStorage.setItem('sahihayn:last',id)}
+function applyLang(){document.documentElement.lang=l();document.documentElement.dir=ui[l()].dir;document.querySelector('.brand h1').textContent=t('brand');document.querySelector('.brand p').innerHTML=t('sub');navButtons[0].querySelector('span').textContent=t('home');navButtons[1].querySelector('span').textContent=t('search');navButtons[2].querySelector('span').textContent=t('fav');navButtons[3].querySelector('span').textContent=t('settings')}
+function tapSound(k='tap'){if(pref('sounds')==='off')return;try{audioCtx=audioCtx||new(window.AudioContext||window.webkitAudioContext)();const o=audioCtx.createOscillator(),g=audioCtx.createGain(),n=audioCtx.currentTime;o.type='sine';o.frequency.value=k==='ok'?920:620;g.gain.setValueAtTime(.001,n);g.gain.exponentialRampToValueAtTime(.055,n+.01);g.gain.exponentialRampToValueAtTime(.001,n+.07);o.connect(g);g.connect(audioCtx.destination);o.start(n);o.stop(n+.075)}catch(e){}}
+function tapFeel(k='tap'){const n=Date.now();if(n-lastFeedbackAt<140)return;lastFeedbackAt=n;if(pref('haptic')!=='off'&&navigator.vibrate)navigator.vibrate(28);tapSound(k)}
+function setPage(p){state.page=p;navButtons.forEach(b=>b.classList.toggle('active',b.dataset.page===p));render()}function render(){applyLang();if(state.page==='home')renderHome();if(state.page==='search')renderSearch();if(state.page==='favorites')renderFavorites();if(state.page==='settings')renderSettings()}
+function renderHome(){const last=hadiths.find(h=>h.id===localStorage.getItem('sahihayn:last'));app.innerHTML=`<section class="screen"><div class="hero-card"><div class="calligraphy">صحيح</div><h2>${t('brand')}</h2><p>${t('hero')}</p></div><div class="books">${books.map(b=>`<article class="book-card" onclick="tapFeel();openBook('${b.id}')"><div class="book-icon">${b.icon}</div><div><h3>${txt(b.title)}</h3><p class="muted">${b.count} ${t('hadiths')}</p></div><button class="gold-btn">${t('open')}</button></article>`).join('')}</div>${last?`<h3>${t('last')}</h3><article class="hadith-card" onclick="tapFeel();renderHadith('${last.id}')"><b>${txt(books.find(b=>b.id===last.bookId).title)} ${last.number}</b><p>${txt(last.title)}</p><p class="muted">${txt(last.tr).slice(0,80)}...</p></article>`:''}<div class="features"><div class="feature">🔍 ${t('smart')}</div><div class="feature">⭐ ${t('fav')}</div><div class="feature">🔖 ${t('lastH')}</div><div class="feature">🌙 ${t('themes')}</div></div></section>`}
+function openBook(id){state.currentBook=id;const b=books.find(x=>x.id===id);app.innerHTML=`<section class="screen"><button class="small-btn" onclick="renderHome()">${t('back')}</button><h2>${txt(b.title)}</h2><p class="muted">${t('chapters')}</p><div class="chapter-list">${chapters.map(c=>`<article class="chapter-card" onclick="tapFeel();openChapter('${id}','${c.id}')"><span>${c[l()]}</span><span>›</span></article>`).join('')}</div></section>`}
+function openChapter(bookId,ch){const b=books.find(x=>x.id===bookId),list=hadiths.filter(h=>h.bookId===bookId&&(h.chapterId===ch||!ch));const c=chapters.find(x=>x.id===ch);app.innerHTML=`<section class="screen"><button class="small-btn" onclick="openBook('${bookId}')">${t('back')}</button><h2>${c?c[l()]:txt(b.title)}</h2><p class="muted">${txt(b.title)}</p><div class="chapter-list">${(list.length?list:hadiths.filter(h=>h.bookId===bookId)).map(hadithItem).join('')}</div></section>`}
+function hadithItem(h){const b=books.find(x=>x.id===h.bookId);return`<article class="hadith-card" onclick="tapFeel();renderHadith('${h.id}')"><b>${txt(b.title)} ${h.number}</b><p>${txt(h.title)}</p><p class="muted">${txt(h.tr).slice(0,90)}...</p></article>`}
+function renderHadith(id){const h=hadiths.find(x=>x.id===id),b=books.find(x=>x.id===h.bookId);saveLast(id);app.innerHTML=`<section class="screen"><button class="small-btn" onclick="render()">${t('back')}</button><h2>${txt(b.title)} ${h.number}</h2><p class="muted">${txt(h.book)}</p><article class="hadith-card"><h3>${txt(h.title)}</h3><div class="arabic">${h.arabic}</div><hr><p><b>${t('tr')}</b></p><p class="translation">${txt(h.tr)}</p><div class="actions"><button class="small-btn" onclick="toggleFav('${h.id}')">${isFav(h.id)?t('inFav'):t('addFav')}</button><button class="small-btn" onclick="shareHadith('${h.id}')">${t('share')}</button><button class="small-btn" onclick="speakHadith('${h.id}')">${t('listen')}</button></div></article></section>`}
+function toggleFav(id){const f=getFavorites();setFavorites(f.includes(id)?f.filter(x=>x!==id):[...f,id]);renderHadith(id)}
+function renderSearch(){const q=state.query.toLowerCase(),r=hadiths.filter(h=>`${txt(h.title)} ${txt(h.tr)} ${h.arabic}`.toLowerCase().includes(q));app.innerHTML=`<section class="screen"><h2>${t('searchTitle')}</h2><input class="search-input" placeholder="${t('searchPh')}" value="${state.query}" oninput="state.query=this.value;renderSearch()"><div class="chapter-list">${r.map(hadithItem).join('')||`<p class="empty">${t('empty')}</p>`}</div></section>`}
+function renderFavorites(){const list=hadiths.filter(h=>getFavorites().includes(h.id));app.innerHTML=`<section class="screen"><h2>${t('favTitle')}</h2><div class="chapter-list">${list.map(hadithItem).join('')||`<p class="empty">${t('noFav')}</p>`}</div></section>`}
+function renderSettings(){app.innerHTML=`<section class="screen"><h2>${t('settings')}</h2><article class="setting-card"><h3>${t('language')}</h3><p class="muted">${t('languageText')}</p>${['ru','ar','ka'].map(x=>`<button class="gold-btn" onclick="setLang('${x}')">${l()===x?'✓ ':''}${names[x]}</button><br><br>`).join('')}</article><article class="setting-card"><h3>${t('theme')}</h3><p class="muted">${t('themeText')}</p><button class="gold-btn" onclick="toggleTheme()">${t('themeBtn')}</button></article><article class="setting-card"><h3>${t('sound')}</h3><p class="muted">${t('soundText')}</p><button class="gold-btn" onclick="toggleSounds()">${pref('sounds')==='off'?t('soundOn'):t('soundOff')}</button><br><br><button class="gold-btn" onclick="toggleHaptic()">${pref('haptic')==='off'?t('hapticOn'):t('hapticOff')}</button><br><br><button class="small-btn" onclick="tapFeel('ok')">${t('test')}</button></article><article class="setting-card"><h3>${t('offline')}</h3><p class="muted">${t('offlineText')}</p></article></section>`}
+function setLang(x){setPref('lang',x);tapFeel('ok');render()}function toggleTheme(){document.body.classList.toggle('light');setPref('theme',document.body.classList.contains('light')?'light':'dark')}function toggleSounds(){setPref('sounds',pref('sounds')==='off'?'on':'off');renderSettings()}function toggleHaptic(){setPref('haptic',pref('haptic')==='off'?'on':'off');renderSettings()}
+function shareHadith(id){const h=hadiths.find(x=>x.id===id),b=books.find(x=>x.id===h.bookId),text=`${txt(b.title)} ${h.number}\n${txt(h.title)}\n\n${txt(h.tr)}`;if(navigator.share)navigator.share({title:txt(h.title),text});else navigator.clipboard.writeText(text).then(()=>alert(t('copied')||'Copied'))}function speakHadith(id){const h=hadiths.find(x=>x.id===id);speechSynthesis.cancel();speechSynthesis.speak(new SpeechSynthesisUtterance(txt(h.tr)))}
+navButtons.forEach(btn=>btn.addEventListener('click',()=>setPage(btn.dataset.page)));document.getElementById('searchBtn').addEventListener('click',()=>setPage('search'));document.addEventListener('click',e=>{if(e.target.closest('button'))tapFeel()},{capture:true});if(pref('theme','dark')==='light')document.body.classList.add('light');if('serviceWorker'in navigator)navigator.serviceWorker.register('sw.js').catch(()=>{});render();
