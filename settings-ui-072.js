@@ -17,7 +17,7 @@
     '<article class="setting-card"><h3>'+d.theme+'</h3><button class="gold-btn" onclick="document.body.classList.toggle(\'light\')">'+d.themeBtn+'</button></article>'+
     '<article class="setting-card"><h3>'+d.sound+'</h3><label class="switch-row"><span>'+d.haptic+'</span><input type="checkbox" '+(on('sahihayn:haptic')?'checked':'')+' onchange="localStorage.setItem(\'sahihayn:haptic\',this.checked?\'on\':\'off\')"><i></i></label><label class="switch-row"><span>'+d.voice+'</span><input type="checkbox" '+(on('sahihayn:voice')?'checked':'')+' onchange="localStorage.setItem(\'sahihayn:voice\',this.checked?\'on\':\'off\')"><i></i></label></article>'+
     '<article class="setting-card"><h3>'+d.db+'</h3><p>'+d.b+': '+cnt('bukhari')+' / 7275</p><p>'+d.m+': '+cnt('muslim')+' / 7563</p></article>'+
-    '<article class="setting-card" style="text-align:center"><h3>'+d.about+'</h3><h2>'+brand()+'</h2><p class="muted">Version 0.7.2</p><p>© 2026 Adam Margoev<br>All Rights Reserved</p></article></section>';
+    '<article class="setting-card" style="text-align:center"><h3>'+d.about+'</h3><h2>'+brand()+'</h2><p class="muted">Version 0.7.7</p><p>© 2026 Adam Margoev<br>All Rights Reserved</p></article></section>';
   }
   function hook(){if(typeof window.settings==='function')window.settings=settings2}
   document.addEventListener('DOMContentLoaded',hook);
