@@ -1,0 +1,13 @@
+html, body {
+  overscroll-behavior-y: none;
+  overscroll-behavior-x: none;
+}
+
+body {
+  overscroll-behavior: none;
+}
+
+.phone-app,
+#app {
+  overscroll-behavior: contain;
+}
