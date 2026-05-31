@@ -1,15 +1,17 @@
 (function(){
   const T={
-    ru:{settings:'Настройки',language:'Язык приложения',theme:'Тема',themeBtn:'🌙 / ☀️ Переключить тему',sound:'Звук и вибрация',haptic:'Вибрация кнопок',voice:'Озвучивание хадисов',db:'База хадисов',feedback:'Обратная связь',feedbackPh:'Напишите здесь замечание, ошибку или предложение...',about:'О приложении',b:'Сахих аль-Бухари',m:'Сахих Муслим'},
-    en:{settings:'Settings',language:'App language',theme:'Theme',themeBtn:'🌙 / ☀️ Toggle theme',sound:'Sound and vibration',haptic:'Button vibration',voice:'Hadith voice reading',db:'Hadith database',feedback:'Feedback',feedbackPh:'Write a note, bug report, or suggestion here...',about:'About',b:'Sahih al-Bukhari',m:'Sahih Muslim'},
-    ka:{settings:'პარამეტრები',language:'აპლიკაციის ენა',theme:'თემა',themeBtn:'🌙 / ☀️ თემის შეცვლა',sound:'ხმა და ვიბრაცია',haptic:'ღილაკების ვიბრაცია',voice:'ჰადისების გახმოვანება',db:'ჰადისების ბაზა',feedback:'უკუკავშირი',feedbackPh:'დაწერეთ შენიშვნა, შეცდომა ან წინადადება...',about:'აპლიკაციის შესახებ',b:'საჰიჰ ალ-ბუხარი',m:'საჰიჰ მუსლიმი'},
-    ar:{settings:'الإعدادات',language:'لغة التطبيق',theme:'المظهر',themeBtn:'🌙 / ☀️ تغيير المظهر',sound:'الصوت والاهتزاز',haptic:'اهتزاز الأزرار',voice:'قراءة الأحاديث صوتياً',db:'قاعدة الأحاديث',feedback:'التواصل',feedbackPh:'اكتب ملاحظة أو خطأ أو اقتراحاً...',about:'حول التطبيق',b:'صحيح البخاري',m:'صحيح مسلم'}
+    ru:{settings:'Настройки',language:'Язык приложения',theme:'Тема',themeBtn:'🌙 / ☀️ Переключить тему',sound:'Звук и вибрация',haptic:'Вибрация кнопок',voice:'Озвучивание хадисов',db:'База хадисов',feedback:'Обратная связь',feedbackText1:'Если что-то не работает, вы нашли ошибку или хотите предложить улучшение, свяжитесь с нами.',feedbackText2:'Мы рассматриваем сообщения и исправляем ошибки в новых обновлениях.',contactLabel:'Email для связи:',contactValue:'скоро появится',about:'О приложении',b:'Сахих аль-Бухари',m:'Сахих Муслим'},
+    en:{settings:'Settings',language:'App language',theme:'Theme',themeBtn:'🌙 / ☀️ Toggle theme',sound:'Sound and vibration',haptic:'Button vibration',voice:'Hadith voice reading',db:'Hadith database',feedback:'Feedback',feedbackText1:'If something does not work, you find an error, or want to suggest an improvement, please contact us.',feedbackText2:'We review messages and fix errors in new updates.',contactLabel:'Contact email:',contactValue:'coming soon',about:'About',b:'Sahih al-Bukhari',m:'Sahih Muslim'},
+    ka:{settings:'პარამეტრები',language:'აპლიკაციის ენა',theme:'თემა',themeBtn:'🌙 / ☀️ თემის შეცვლა',sound:'ხმა და ვიბრაცია',haptic:'ღილაკების ვიბრაცია',voice:'ჰადისების გახმოვანება',db:'ჰადისების ბაზა',feedback:'უკუკავშირი',feedbackText1:'თუ რამე არ მუშაობს, შეცდომა იპოვეთ ან გაუმჯობესების შეთავაზება გსურთ, დაგვიკავშირდით.',feedbackText2:'ჩვენ განვიხილავთ შეტყობინებებს და ვასწორებთ შეცდომებს ახალ განახლებებში.',contactLabel:'საკონტაქტო ელფოსტა:',contactValue:'მალე დაემატება',about:'აპლიკაციის შესახებ',b:'საჰიჰ ალ-ბუხარი',m:'საჰიჰ მუსლიმი'},
+    ar:{settings:'الإعدادات',language:'لغة التطبيق',theme:'المظهر',themeBtn:'🌙 / ☀️ تغيير المظهر',sound:'الصوت والاهتزاز',haptic:'اهتزاز الأزرار',voice:'قراءة الأحاديث صوتياً',db:'قاعدة الأحاديث',feedback:'التواصل',feedbackText1:'إذا كان هناك شيء لا يعمل، أو وجدت خطأً، أو أردت اقتراح تحسين، يرجى التواصل معنا.',feedbackText2:'نراجع الرسائل ونصلح الأخطاء في التحديثات الجديدة.',contactLabel:'البريد الإلكتروني للتواصل:',contactValue:'قريباً',about:'حول التطبيق',b:'صحيح البخاري',m:'صحيح مسلم'}
   };
+
   function lang(){return localStorage.getItem('sahihayn:lang')||'ru'}
   function tr(){return T[lang()]||T.ru}
   function on(k){return localStorage.getItem(k)!=='off'}
   function cnt(n){try{return typeof loadedBookCount==='function'?loadedBookCount(n):0}catch(e){return 0}}
   function brand(){return lang()==='en'?'Sahihayn':(lang()==='ka'?'საჰიჰაინი':(lang()==='ar'?'الصحيحان':'Сахихайн'))}
+
   function settings2(){
     const d=tr();
     app.innerHTML='<section class="screen"><h2>'+d.settings+'</h2>'+ 
@@ -17,9 +19,10 @@
     '<article class="setting-card"><h3>'+d.theme+'</h3><button class="gold-btn" onclick="document.body.classList.toggle(\'light\')">'+d.themeBtn+'</button></article>'+ 
     '<article class="setting-card"><h3>'+d.sound+'</h3><label class="switch-row"><span>'+d.haptic+'</span><input type="checkbox" '+(on('sahihayn:haptic')?'checked':'')+' onchange="localStorage.setItem(\'sahihayn:haptic\',this.checked?\'on\':\'off\')"><i></i></label><label class="switch-row"><span>'+d.voice+'</span><input type="checkbox" '+(on('sahihayn:voice')?'checked':'')+' onchange="localStorage.setItem(\'sahihayn:voice\',this.checked?\'on\':\'off\')"><i></i></label></article>'+ 
     '<article class="setting-card"><h3>'+d.db+'</h3><p>'+d.b+': '+cnt('bukhari')+' / 7275</p><p>'+d.m+': '+cnt('muslim')+' / 7563</p></article>'+ 
-    '<article class="setting-card"><h3>'+d.feedback+'</h3><textarea id="feedbackText" placeholder="'+d.feedbackPh+'" style="width:100%;min-height:120px;border-radius:18px;border:1px solid var(--line);background:rgba(255,255,255,.04);color:var(--text);padding:14px;font:inherit;resize:vertical;outline:none"></textarea></article>'+ 
-    '<article class="setting-card" style="text-align:center"><h3>'+d.about+'</h3><h2>'+brand()+'</h2><p class="muted">Version 0.7.8</p><p>© 2026 Adam Margoev<br>All Rights Reserved</p></article></section>';
+    '<article class="setting-card"><h3>'+d.feedback+':</h3><p>'+d.feedbackText1+'</p><p>'+d.feedbackText2+'</p><p class="muted"><b>'+d.contactLabel+'</b> '+d.contactValue+'</p></article>'+ 
+    '<article class="setting-card" style="text-align:center"><h3>'+d.about+'</h3><h2>'+brand()+'</h2><p class="muted">Version 0.7.9</p><p>© 2026 Adam Margoev<br>All Rights Reserved</p></article></section>';
   }
+
   function hook(){if(typeof window.settings==='function')window.settings=settings2}
   document.addEventListener('DOMContentLoaded',hook);
   document.addEventListener('click',function(){setTimeout(hook,20)});
