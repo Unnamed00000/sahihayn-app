@@ -13,6 +13,7 @@
   function tr(){return T[lang()]||T.ru}
   function on(k){return localStorage.getItem(k)!=='off'}
   function cnt(n){try{return typeof loadedBookCount==='function'?loadedBookCount(n):0}catch(e){return 0}}
+  function total(n){try{return typeof EXPECTED==='object'&&EXPECTED[n]?EXPECTED[n]:(n==='bukhari'?7277:7368)}catch(e){return n==='bukhari'?7277:7368}}
   function brand(){return lang()==='en'?'Sahihayn':(lang()==='ka'?'საჰიჰაინი':(lang()==='ar'?'الصحيحان':'Сахихайн'))}
 
   function playTouchSound(){
@@ -84,7 +85,7 @@
     '<article class="setting-card"><h3>'+d.language+'</h3><div class="select-wrap"><select class="language-select styled-select" onchange="localStorage.setItem(\'sahihayn:lang\',this.value);render()"><option value="ru" '+(lang()==='ru'?'selected':'')+'>Русский</option><option value="en" '+(lang()==='en'?'selected':'')+'>English</option><option value="ka" '+(lang()==='ka'?'selected':'')+'>ქართული</option><option value="ar" '+(lang()==='ar'?'selected':'')+'>العربية</option></select></div></article>'+ 
     '<article class="setting-card"><h3>'+d.theme+'</h3><button class="gold-btn" onclick="document.body.classList.toggle(\'light\')">'+d.themeBtn+'</button></article>'+ 
     '<article class="setting-card"><h3>'+d.sound+'</h3><label class="switch-row"><span>'+d.haptic+'</span><input type="checkbox" '+(on('sahihayn:haptic')?'checked':'')+' onchange="localStorage.setItem(\'sahihayn:haptic\',this.checked?\'on\':\'off\')"><i></i></label><label class="switch-row"><span>'+d.voice+'</span><input type="checkbox" '+(on('sahihayn:voice')?'checked':'')+' onchange="localStorage.setItem(\'sahihayn:voice\',this.checked?\'on\':\'off\')"><i></i></label><label class="switch-row"><span>'+d.touchSound+'</span><input type="checkbox" '+(on('sahihayn:touchSound')?'checked':'')+' onchange="localStorage.setItem(\'sahihayn:touchSound\',this.checked?\'on\':\'off\')"><i></i></label></article>'+ 
-    '<article class="setting-card"><h3>'+d.db+'</h3><p>'+d.b+': '+cnt('bukhari')+' / 7275</p><p>'+d.m+': '+cnt('muslim')+' / 7563</p></article>'+ 
+    '<article class="setting-card"><h3>'+d.db+'</h3><p>'+d.b+': '+cnt('bukhari')+' / '+total('bukhari')+'</p><p>'+d.m+': '+cnt('muslim')+' / '+total('muslim')+'</p></article>'+ 
     '<article class="setting-card"><h3>'+d.feedback+':</h3><p>'+d.feedbackText1+'</p><p>'+d.feedbackText2+'</p><p class="muted"><b>'+d.contactLabel+'</b> '+d.contactValue+'</p></article>'+ 
     '<article class="setting-card" style="text-align:center"><h3>'+d.about+'</h3><h2>'+brand()+'</h2><p class="muted">Version 0.8.2</p><p>© 2026 Adam Margoev<br>All Rights Reserved</p></article></section>';
   }
