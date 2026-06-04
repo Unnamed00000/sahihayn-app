@@ -78,12 +78,12 @@
     if(m) m.remove();
   }
 
-  function closeSettings(){try{setPage('home')}catch(e){try{home()}catch(_){}}}
+  function closeSettings(){try{state.page='home';render()}catch(e){try{setPage('home')}catch(_){try{home()}catch(__){}}}}
   window.closeSettings=closeSettings;
 
   function settings2(){
     const d=tr();
-    app.innerHTML='<section class="screen"><div class="settings-head"><h2>'+d.settings+'</h2><button class="settings-close" onclick="closeSettings()" aria-label="'+d.close+'">×</button></div>'+ 
+    app.innerHTML='<section class="screen settings-screen"><button class="settings-close" onclick="closeSettings()" aria-label="'+d.close+'">×</button><h2>'+d.settings+'</h2>'+ 
     '<article class="setting-card"><h3>📱 '+d.installGuide+'</h3><button class="gold-btn" onclick="openInstallGuide()">📱 '+d.openGuide+'</button><button class="gold-btn" onclick="shareSahihaynApp()" style="margin-top:10px">↗️ '+d.shareApp+'</button></article>'+ 
     '<article class="setting-card"><h3>'+d.language+'</h3><div class="select-wrap"><select class="language-select styled-select" onchange="localStorage.setItem(\'sahihayn:lang\',this.value);render()"><option value="ru" '+(lang()==='ru'?'selected':'')+'>Русский</option><option value="en" '+(lang()==='en'?'selected':'')+'>English</option><option value="ka" '+(lang()==='ka'?'selected':'')+'>ქართული</option><option value="ar" '+(lang()==='ar'?'selected':'')+'>العربية</option></select></div></article>'+ 
     '<article class="setting-card"><h3>'+d.theme+'</h3><button class="gold-btn" onclick="document.body.classList.toggle(\'light\')">'+d.themeBtn+'</button></article>'+ 
