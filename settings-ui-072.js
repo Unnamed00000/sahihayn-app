@@ -103,7 +103,7 @@
     '<article class="setting-card"><h3>'+d.sound+'</h3><label class="switch-row"><span>'+d.haptic+'</span><input type="checkbox" '+(on('sahihayn:haptic')?'checked':'')+' onchange="localStorage.setItem(\'sahihayn:haptic\',this.checked?\'on\':\'off\')"><i></i></label><label class="switch-row"><span>'+d.voice+'</span><input type="checkbox" '+(on('sahihayn:voice')?'checked':'')+' onchange="localStorage.setItem(\'sahihayn:voice\',this.checked?\'on\':\'off\')"><i></i></label><label class="switch-row"><span>'+d.touchSound+'</span><input type="checkbox" '+(on('sahihayn:touchSound')?'checked':'')+' onchange="localStorage.setItem(\'sahihayn:touchSound\',this.checked?\'on\':\'off\')"><i></i></label></article>'+ 
     '<article class="setting-card"><h3>'+d.db+'</h3><p>'+d.b+': '+cnt('bukhari')+' / '+total('bukhari')+'</p><p>'+d.m+': '+cnt('muslim')+' / '+total('muslim')+'</p></article>'+ 
     '<article class="setting-card"><h3>'+d.feedback+':</h3><p>'+d.feedbackText1+'</p><p>'+d.feedbackText2+'</p><p class="muted"><b>'+d.contactLabel+'</b> '+d.contactValue+'</p></article>'+ 
-    '<article class="setting-card" style="text-align:center"><h3>'+d.about+'</h3><h2>'+brand()+'</h2><p class="muted">Version 0.8.6</p><p>© 2026 Adam Margoev<br>All Rights Reserved</p></article></section>';
+    '<article class="setting-card" style="text-align:center"><h3>'+d.about+'</h3><h2>'+brand()+'</h2><p class="muted">Version 0.8.7</p><p>© 2026 Adam Margoev<br>All Rights Reserved</p></article></section>';
   }
 
   function hook(){if(typeof window.settings==='function')window.settings=settings2}

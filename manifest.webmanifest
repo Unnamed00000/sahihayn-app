@@ -1,9 +1,9 @@
 {
   "name": "Sahihayn",
   "short_name": "Sahihayn",
-  "version": "0.7.7",
+  "version": "0.8.7",
   "description": "Sahih al-Bukhari and Sahih Muslim",
-  "start_url": "/sahihayn-app/?v=077",
+  "start_url": "/sahihayn-app/?v=087",
   "scope": "/sahihayn-app/",
   "display": "standalone",
   "background_color": "#0b2e1a",
